@@ -12,7 +12,7 @@
 -export([format_error/1]).
 
 %% User code. This is placed here to allow extra attributes.
--file("./lib/lexer.xrl", 21).
+-file("src/lexer.xrl", 21).
 
 to_atom(Chars) -> list_to_atom(Chars).
 
@@ -307,7 +307,7 @@ adjust_line(T, A, [_|Cs], L) ->
 %% return signal either an unrecognised character or end of current
 %% input.
 
--file("./lib/lexer.erl", 309).
+-file("src/lexer.erl", 309).
 yystate() -> 8.
 
 yystate(9, [32|Ics], Line, Tlen, _, _) ->
@@ -389,42 +389,42 @@ yyaction(7, _, _, _) ->
 yyaction(_, _, _, _) -> error.
 
 -compile({inline,yyaction_0/2}).
--file("./lib/lexer.xrl", 10).
+-file("src/lexer.xrl", 10).
 yyaction_0(TokenChars, TokenLine) ->
      { token, { atom, TokenLine, to_atom (TokenChars) } } .
 
 -compile({inline,yyaction_1/1}).
--file("./lib/lexer.xrl", 11).
+-file("src/lexer.xrl", 11).
 yyaction_1(TokenLine) ->
      { token, { '(', TokenLine } } .
 
 -compile({inline,yyaction_2/1}).
--file("./lib/lexer.xrl", 12).
+-file("src/lexer.xrl", 12).
 yyaction_2(TokenLine) ->
      { token, { ')', TokenLine } } .
 
 -compile({inline,yyaction_3/1}).
--file("./lib/lexer.xrl", 13).
+-file("src/lexer.xrl", 13).
 yyaction_3(TokenLine) ->
      { token, { 'and', TokenLine } } .
 
 -compile({inline,yyaction_4/1}).
--file("./lib/lexer.xrl", 14).
+-file("src/lexer.xrl", 14).
 yyaction_4(TokenLine) ->
      { token, { 'or', TokenLine } } .
 
 -compile({inline,yyaction_5/1}).
--file("./lib/lexer.xrl", 15).
+-file("src/lexer.xrl", 15).
 yyaction_5(TokenLine) ->
      { token, { 'not', TokenLine } } .
 
 -compile({inline,yyaction_6/1}).
--file("./lib/lexer.xrl", 16).
+-file("src/lexer.xrl", 16).
 yyaction_6(TokenLine) ->
      { token, { implies, TokenLine } } .
 
 -compile({inline,yyaction_7/0}).
--file("./lib/lexer.xrl", 17).
+-file("src/lexer.xrl", 17).
 yyaction_7() ->
      skip_token .
 
