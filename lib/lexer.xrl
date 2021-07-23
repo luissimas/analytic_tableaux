@@ -9,7 +9,7 @@ IMPLIES       = \-\>
 
 Rules.
 
-{ATOM}        : {token, {atom, TokenLine, TokenChars}}.
+{ATOM}        : {token, {atom, TokenLine, to_atom(TokenChars)}}.
 \(            : {token, {'(', TokenLine}}.
 \)            : {token, {')', TokenLine}}.
 {AND}         : {token, {'and', TokenLine}}.
@@ -19,3 +19,5 @@ Rules.
 {WHITESPACE}+ : skip_token.
 
 Erlang code.
+
+to_atom(Chars) -> list_to_atom(Chars).

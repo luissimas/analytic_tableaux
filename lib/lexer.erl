@@ -14,6 +14,7 @@
 %% User code. This is placed here to allow extra attributes.
 -file("./lib/lexer.xrl", 21).
 
+to_atom(Chars) -> list_to_atom(Chars).
 
 -file("/usr/lib/erlang/lib/parsetools-2.3/include/leexinc.hrl", 14).
 
@@ -306,7 +307,7 @@ adjust_line(T, A, [_|Cs], L) ->
 %% return signal either an unrecognised character or end of current
 %% input.
 
--file("./lib/lexer.erl", 308).
+-file("./lib/lexer.erl", 309).
 yystate() -> 8.
 
 yystate(9, [32|Ics], Line, Tlen, _, _) ->
@@ -390,7 +391,7 @@ yyaction(_, _, _, _) -> error.
 -compile({inline,yyaction_0/2}).
 -file("./lib/lexer.xrl", 10).
 yyaction_0(TokenChars, TokenLine) ->
-     { token, { atom, TokenLine, TokenChars } } .
+     { token, { atom, TokenLine, to_atom (TokenChars) } } .
 
 -compile({inline,yyaction_1/1}).
 -file("./lib/lexer.xrl", 11).
