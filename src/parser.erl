@@ -1,6 +1,6 @@
 -module(parser).
 -export([parse/1, parse_and_scan/1, format_error/1]).
--file("src/parser.yrl", 18).
+-file("src/parser.yrl", 17).
 
 value({_Token, _Line, Value}) -> Value;
 value({Value, _Line}) -> Value.
@@ -190,20 +190,22 @@ yeccpars2(4=S, Cat, Ss, Stack, T, Ts, Tzr) ->
  yeccpars2_0(S, Cat, Ss, Stack, T, Ts, Tzr);
 %% yeccpars2(5=S, Cat, Ss, Stack, T, Ts, Tzr) ->
 %%  yeccpars2_5(S, Cat, Ss, Stack, T, Ts, Tzr);
-%% yeccpars2(6=S, Cat, Ss, Stack, T, Ts, Tzr) ->
-%%  yeccpars2_0(S, Cat, Ss, Stack, T, Ts, Tzr);
+yeccpars2(6=S, Cat, Ss, Stack, T, Ts, Tzr) ->
+ yeccpars2_0(S, Cat, Ss, Stack, T, Ts, Tzr);
 yeccpars2(7=S, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_7(S, Cat, Ss, Stack, T, Ts, Tzr);
+ yeccpars2_0(S, Cat, Ss, Stack, T, Ts, Tzr);
 yeccpars2(8=S, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_8(S, Cat, Ss, Stack, T, Ts, Tzr);
-yeccpars2(9=S, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_9(S, Cat, Ss, Stack, T, Ts, Tzr);
+ yeccpars2_0(S, Cat, Ss, Stack, T, Ts, Tzr);
+%% yeccpars2(9=S, Cat, Ss, Stack, T, Ts, Tzr) ->
+%%  yeccpars2_9(S, Cat, Ss, Stack, T, Ts, Tzr);
 %% yeccpars2(10=S, Cat, Ss, Stack, T, Ts, Tzr) ->
 %%  yeccpars2_10(S, Cat, Ss, Stack, T, Ts, Tzr);
 %% yeccpars2(11=S, Cat, Ss, Stack, T, Ts, Tzr) ->
 %%  yeccpars2_11(S, Cat, Ss, Stack, T, Ts, Tzr);
-yeccpars2(12=S, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_12(S, Cat, Ss, Stack, T, Ts, Tzr);
+%% yeccpars2(12=S, Cat, Ss, Stack, T, Ts, Tzr) ->
+%%  yeccpars2_12(S, Cat, Ss, Stack, T, Ts, Tzr);
+yeccpars2(13=S, Cat, Ss, Stack, T, Ts, Tzr) ->
+ yeccpars2_13(S, Cat, Ss, Stack, T, Ts, Tzr);
 yeccpars2(Other, _, _, _, _, _, _) ->
  erlang:error({yecc_bug,"1.4",{missing_state_in_action_table, Other}}).
 
@@ -221,11 +223,11 @@ yeccpars2_0(_, _, _, _, T, _, _) ->
 yeccpars2_1(_S, '$end', _Ss, Stack, _T, _Ts, _Tzr) ->
  {ok, hd(Stack)};
 yeccpars2_1(S, 'and', Ss, Stack, T, Ts, Tzr) ->
- yeccpars1(S, 7, Ss, Stack, T, Ts, Tzr);
+ yeccpars1(S, 6, Ss, Stack, T, Ts, Tzr);
 yeccpars2_1(S, implies, Ss, Stack, T, Ts, Tzr) ->
- yeccpars1(S, 8, Ss, Stack, T, Ts, Tzr);
+ yeccpars1(S, 7, Ss, Stack, T, Ts, Tzr);
 yeccpars2_1(S, 'or', Ss, Stack, T, Ts, Tzr) ->
- yeccpars1(S, 9, Ss, Stack, T, Ts, Tzr);
+ yeccpars1(S, 8, Ss, Stack, T, Ts, Tzr);
 yeccpars2_1(_, _, _, _, T, _, _) ->
  yeccerror(T).
 
@@ -244,72 +246,66 @@ yeccpars2_5(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
 
 %% yeccpars2_6: see yeccpars2_0
 
-yeccpars2_7(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
- NewStack = yeccpars2_7_(Stack),
- yeccgoto_operator(hd(Ss), Cat, Ss, NewStack, T, Ts, Tzr).
+%% yeccpars2_7: see yeccpars2_0
 
-yeccpars2_8(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
- NewStack = yeccpars2_8_(Stack),
- yeccgoto_operator(hd(Ss), Cat, Ss, NewStack, T, Ts, Tzr).
+%% yeccpars2_8: see yeccpars2_0
 
 yeccpars2_9(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
+ [_,_|Nss] = Ss,
  NewStack = yeccpars2_9_(Stack),
- yeccgoto_operator(hd(Ss), Cat, Ss, NewStack, T, Ts, Tzr).
+ yeccgoto_formula(hd(Nss), Cat, Nss, NewStack, T, Ts, Tzr).
 
 yeccpars2_10(S, 'and', Ss, Stack, T, Ts, Tzr) ->
- yeccpars1(S, 7, Ss, Stack, T, Ts, Tzr);
-yeccpars2_10(S, implies, Ss, Stack, T, Ts, Tzr) ->
- yeccpars1(S, 8, Ss, Stack, T, Ts, Tzr);
+ yeccpars1(S, 6, Ss, Stack, T, Ts, Tzr);
 yeccpars2_10(S, 'or', Ss, Stack, T, Ts, Tzr) ->
- yeccpars1(S, 9, Ss, Stack, T, Ts, Tzr);
+ yeccpars1(S, 8, Ss, Stack, T, Ts, Tzr);
 yeccpars2_10(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
  [_,_|Nss] = Ss,
  NewStack = yeccpars2_10_(Stack),
  yeccgoto_formula(hd(Nss), Cat, Nss, NewStack, T, Ts, Tzr).
 
--dialyzer({nowarn_function, yeccpars2_11/7}).
-yeccpars2_11(S, ')', Ss, Stack, T, Ts, Tzr) ->
- yeccpars1(S, 12, Ss, Stack, T, Ts, Tzr);
-yeccpars2_11(S, 'and', Ss, Stack, T, Ts, Tzr) ->
+yeccpars2_11(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
+ [_,_|Nss] = Ss,
+ NewStack = yeccpars2_11_(Stack),
+ yeccgoto_formula(hd(Nss), Cat, Nss, NewStack, T, Ts, Tzr).
+
+-dialyzer({nowarn_function, yeccpars2_12/7}).
+yeccpars2_12(S, ')', Ss, Stack, T, Ts, Tzr) ->
+ yeccpars1(S, 13, Ss, Stack, T, Ts, Tzr);
+yeccpars2_12(S, 'and', Ss, Stack, T, Ts, Tzr) ->
+ yeccpars1(S, 6, Ss, Stack, T, Ts, Tzr);
+yeccpars2_12(S, implies, Ss, Stack, T, Ts, Tzr) ->
  yeccpars1(S, 7, Ss, Stack, T, Ts, Tzr);
-yeccpars2_11(S, implies, Ss, Stack, T, Ts, Tzr) ->
+yeccpars2_12(S, 'or', Ss, Stack, T, Ts, Tzr) ->
  yeccpars1(S, 8, Ss, Stack, T, Ts, Tzr);
-yeccpars2_11(S, 'or', Ss, Stack, T, Ts, Tzr) ->
- yeccpars1(S, 9, Ss, Stack, T, Ts, Tzr);
-yeccpars2_11(_, _, _, _, T, _, _) ->
+yeccpars2_12(_, _, _, _, T, _, _) ->
  yeccerror(T).
 
-yeccpars2_12(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
+yeccpars2_13(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
  [_,_|Nss] = Ss,
- NewStack = yeccpars2_12_(Stack),
+ NewStack = yeccpars2_13_(Stack),
  yeccgoto_formula(hd(Nss), Cat, Nss, NewStack, T, Ts, Tzr).
 
 -dialyzer({nowarn_function, yeccgoto_formula/7}).
 yeccgoto_formula(0, Cat, Ss, Stack, T, Ts, Tzr) ->
  yeccpars2_1(1, Cat, Ss, Stack, T, Ts, Tzr);
 yeccgoto_formula(2, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_11(11, Cat, Ss, Stack, T, Ts, Tzr);
+ yeccpars2_12(12, Cat, Ss, Stack, T, Ts, Tzr);
 yeccgoto_formula(4=_S, Cat, Ss, Stack, T, Ts, Tzr) ->
  yeccpars2_5(_S, Cat, Ss, Stack, T, Ts, Tzr);
-yeccgoto_formula(6, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_10(10, Cat, Ss, Stack, T, Ts, Tzr).
-
--dialyzer({nowarn_function, yeccgoto_operator/7}).
-yeccgoto_operator(1, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_0(6, Cat, Ss, Stack, T, Ts, Tzr);
-yeccgoto_operator(5, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_0(6, Cat, Ss, Stack, T, Ts, Tzr);
-yeccgoto_operator(10, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_0(6, Cat, Ss, Stack, T, Ts, Tzr);
-yeccgoto_operator(11, Cat, Ss, Stack, T, Ts, Tzr) ->
- yeccpars2_0(6, Cat, Ss, Stack, T, Ts, Tzr).
+yeccgoto_formula(6=_S, Cat, Ss, Stack, T, Ts, Tzr) ->
+ yeccpars2_11(_S, Cat, Ss, Stack, T, Ts, Tzr);
+yeccgoto_formula(7, Cat, Ss, Stack, T, Ts, Tzr) ->
+ yeccpars2_10(10, Cat, Ss, Stack, T, Ts, Tzr);
+yeccgoto_formula(8=_S, Cat, Ss, Stack, T, Ts, Tzr) ->
+ yeccpars2_9(_S, Cat, Ss, Stack, T, Ts, Tzr).
 
 -compile({inline,yeccpars2_3_/1}).
 -file("src/parser.yrl", 6).
 yeccpars2_3_(__Stack0) ->
  [___1 | __Stack] = __Stack0,
  [begin
-                                       value(___1)
+                                        value(___1)
   end | __Stack].
 
 -compile({inline,yeccpars2_5_/1}).
@@ -317,48 +313,40 @@ yeccpars2_3_(__Stack0) ->
 yeccpars2_5_(__Stack0) ->
  [___2,___1 | __Stack] = __Stack0,
  [begin
-                                       {value(___1), ___2}
-  end | __Stack].
-
--compile({inline,yeccpars2_7_/1}).
--file("src/parser.yrl", 10).
-yeccpars2_7_(__Stack0) ->
- [___1 | __Stack] = __Stack0,
- [begin
-                                       value(___1)
-  end | __Stack].
-
--compile({inline,yeccpars2_8_/1}).
--file("src/parser.yrl", 12).
-yeccpars2_8_(__Stack0) ->
- [___1 | __Stack] = __Stack0,
- [begin
-                                       value(___1)
+                                        {value(___1), ___2}
   end | __Stack].
 
 -compile({inline,yeccpars2_9_/1}).
--file("src/parser.yrl", 11).
+-file("src/parser.yrl", 10).
 yeccpars2_9_(__Stack0) ->
- [___1 | __Stack] = __Stack0,
+ [___3,___2,___1 | __Stack] = __Stack0,
  [begin
-                                       value(___1)
+                                        {value(___2), ___1, ___3}
   end | __Stack].
 
 -compile({inline,yeccpars2_10_/1}).
--file("src/parser.yrl", 9).
+-file("src/parser.yrl", 11).
 yeccpars2_10_(__Stack0) ->
  [___3,___2,___1 | __Stack] = __Stack0,
  [begin
-                                       {___2, ___1, ___3}
+                                        {value(___2), ___1, ___3}
   end | __Stack].
 
--compile({inline,yeccpars2_12_/1}).
--file("src/parser.yrl", 7).
-yeccpars2_12_(__Stack0) ->
+-compile({inline,yeccpars2_11_/1}).
+-file("src/parser.yrl", 9).
+yeccpars2_11_(__Stack0) ->
  [___3,___2,___1 | __Stack] = __Stack0,
  [begin
-                                       ___2
+                                        {value(___2), ___1, ___3}
+  end | __Stack].
+
+-compile({inline,yeccpars2_13_/1}).
+-file("src/parser.yrl", 7).
+yeccpars2_13_(__Stack0) ->
+ [___3,___2,___1 | __Stack] = __Stack0,
+ [begin
+                                        ___2
   end | __Stack].
 
 
--file("src/parser.yrl", 22).
+-file("src/parser.yrl", 21).
