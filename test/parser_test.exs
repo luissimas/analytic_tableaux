@@ -1,5 +1,5 @@
 defmodule ParserTest do
-  use ExUnit.Case, aync: true
+  use ExUnit.Case, async: true
 
   test "parses a simple sequent" do
     assert Parser.parse("p->q,p|-q") == [
