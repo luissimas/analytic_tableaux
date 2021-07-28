@@ -10,6 +10,12 @@ defmodule Rules do
           list(Expression.t()) | %{left: Expression.t(), right: Expression.t()}
   def apply_rule(formula), do: rule(formula)
 
+  @spec is_linear?(Expression.t()) :: boolean()
+  def is_linear?(formula), do: type(formula) == :linear
+
+  @spec is_branch?(Expression.t()) :: boolean()
+  def is_branch?(formula), do: type(formula) == :branch
+
   defp type(%{sign: :T, formula: {:and, _, _}}), do: :linear
   defp type(%{sign: :F, formula: {:and, _, _}}), do: :branch
   defp type(%{sign: :T, formula: {:or, _, _}}), do: :branch
@@ -18,6 +24,7 @@ defmodule Rules do
   defp type(%{sign: :F, formula: {:implies, _, _}}), do: :linear
   defp type(%{sign: :T, formula: {:not, _}}), do: :linear
   defp type(%{sign: :F, formula: {:not, _}}), do: :linear
+  defp type(%{formula: atom}) when is_atom(atom), do: :linear
 
   # Tp&q => Tp, Tq
   defp rule(%{sign: :T, formula: {:and, a, b}}) do
@@ -58,6 +65,9 @@ defmodule Rules do
   defp rule(%{sign: :F, formula: {:not, a}}) do
     %{sign: :T, formula: a}
   end
+
+  # F/T p
+  defp rule(%{formula: atom} = formula) when is_atom(atom), do: formula
 
   # Implement branches
   defp branch(a, b) do
