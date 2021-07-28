@@ -5,14 +5,15 @@ defmodule Expression do
   """
 
   @typedoc """
-  Type to represent an expression (signed formula)
+  A unsigned formula in the format {:operator, :operand, :operand}
   """
-  @type expr :: %Expression{
-          operator: :and | :or | :implies | :not | :atom,
-          sign: :T | :F,
-          left: expr() | nil,
-          right: expr() | nil
-        }
+  @type formula :: {atom(), atom() | formula(), atom() | formula()}
 
-  defstruct [:operator, :sign, :left, :right]
+  @typedoc """
+  A signed formula from classical propositional formula
+  """
+  @type t :: %{
+          sign: :T | :F,
+          formula: formula()
+        }
 end

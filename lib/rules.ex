@@ -47,6 +47,6 @@ defmodule Rules do
 
   # Implement branches
   defp branch(a, b) do
-    {a, b}
+    %{left: a, right: b}
   end
 end
