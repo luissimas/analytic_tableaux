@@ -11,7 +11,7 @@ defmodule RulesTest do
   defp f8(), do: %{sign: :F, formula: {:not, :p}}
 
   defp branch(a, b) do
-    {a, b}
+    %{left: a, right: b}
   end
 
   test "and rules" do
@@ -32,5 +32,16 @@ defmodule RulesTest do
   test "not rules" do
     assert Rules.apply_rule(f7()) == %{sign: :F, formula: :p}
     assert Rules.apply_rule(f8()) == %{sign: :T, formula: :p}
+  end
+
+  test "rule types" do
+    assert Rules.get_type(f1()) == :linear
+    assert Rules.get_type(f2()) == :branch
+    assert Rules.get_type(f3()) == :branch
+    assert Rules.get_type(f4()) == :linear
+    assert Rules.get_type(f5()) == :branch
+    assert Rules.get_type(f6()) == :linear
+    assert Rules.get_type(f7()) == :linear
+    assert Rules.get_type(f8()) == :linear
   end
 end

@@ -3,7 +3,21 @@ defmodule Rules do
   Tableaux expansion rules
   """
 
+  @spec get_type(Expression.t()) :: atom()
+  def get_type(formula), do: type(formula)
+
+  @spec apply_rule(Expression.t()) ::
+          list(Expression.t()) | %{left: Expression.t(), right: Expression.t()}
   def apply_rule(formula), do: rule(formula)
+
+  defp type(%{sign: :T, formula: {:and, _, _}}), do: :linear
+  defp type(%{sign: :F, formula: {:and, _, _}}), do: :branch
+  defp type(%{sign: :T, formula: {:or, _, _}}), do: :branch
+  defp type(%{sign: :F, formula: {:or, _, _}}), do: :linear
+  defp type(%{sign: :T, formula: {:implies, _, _}}), do: :branch
+  defp type(%{sign: :F, formula: {:implies, _, _}}), do: :linear
+  defp type(%{sign: :T, formula: {:not, _}}), do: :linear
+  defp type(%{sign: :F, formula: {:not, _}}), do: :linear
 
   # Tp&q => Tp, Tq
   defp rule(%{sign: :T, formula: {:and, a, b}}) do
