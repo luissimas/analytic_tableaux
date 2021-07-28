@@ -3,18 +3,30 @@ defmodule Rules do
   Tableaux expansion rules
   """
 
-  @spec get_type(Expression.t()) :: atom()
-  def get_type(formula), do: type(formula)
+  @spec apply_linear_rules(list(Expression.t())) :: list(Expression.t())
+  def apply_linear_rules(list) do
+    list
+    |> Enum.filter(&is_linear?/1)
+    |> Enum.map(&apply_rule/1)
+    |> List.flatten()
+  end
+
+  @spec apply_branch_rules(list(Expression.t())) :: list(Expression.t())
+  def apply_branch_rules(list) do
+    list
+    |> Enum.filter(&is_branch?/1)
+    |> Enum.map(&apply_rule/1)
+  end
 
   @spec apply_rule(Expression.t()) ::
           list(Expression.t()) | %{left: Expression.t(), right: Expression.t()}
-  def apply_rule(formula), do: rule(formula)
+  defp apply_rule(formula), do: rule(formula)
 
   @spec is_linear?(Expression.t()) :: boolean()
-  def is_linear?(formula), do: type(formula) == :linear
+  defp is_linear?(formula), do: type(formula) == :linear
 
   @spec is_branch?(Expression.t()) :: boolean()
-  def is_branch?(formula), do: type(formula) == :branch
+  defp is_branch?(formula), do: type(formula) == :branch
 
   defp type(%{sign: :T, formula: {:and, _, _}}), do: :linear
   defp type(%{sign: :F, formula: {:and, _, _}}), do: :branch
