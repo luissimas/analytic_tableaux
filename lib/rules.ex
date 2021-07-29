@@ -2,13 +2,17 @@ defmodule Rules do
   @moduledoc """
   Tableaux expansion rules
   """
-
   @spec apply_linear_rules(list(Expression.t())) :: list(Expression.t())
+  def apply_linear_rules([]), do: []
+
   def apply_linear_rules(list) do
-    list
-    |> Enum.filter(&is_linear?/1)
-    |> Enum.map(&apply_rule/1)
-    |> List.flatten()
+    applyed =
+      list
+      |> Enum.filter(&is_linear?/1)
+      |> Enum.map(&apply_rule/1)
+      |> List.flatten()
+
+    applyed ++ apply_linear_rules(applyed)
   end
 
   @spec apply_branch_rules(list(Expression.t())) :: list(Expression.t())
@@ -36,7 +40,7 @@ defmodule Rules do
   defp type(%{sign: :F, formula: {:implies, _, _}}), do: :linear
   defp type(%{sign: :T, formula: {:not, _}}), do: :linear
   defp type(%{sign: :F, formula: {:not, _}}), do: :linear
-  defp type(%{formula: atom}) when is_atom(atom), do: :linear
+  defp type(%{formula: atom}) when is_atom(atom), do: :atom
 
   # Tp&q => Tp, Tq
   defp rule(%{sign: :T, formula: {:and, a, b}}) do
