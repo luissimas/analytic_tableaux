@@ -26,6 +26,28 @@ defmodule BinTree do
       left: from_list(tail)
     }
   end
+
+  @spec create_node(Expression.t()) :: t() | nil
+  def create_node(nil), do: nil
+  def create_node(value), do: %BinTree{value: value}
+
+  @spec add_linear_node(t(), t()) :: t()
+  def add_linear_node(%{left: nil} = tree, node) do
+    %BinTree{tree | left: node}
+  end
+
+  def add_linear_node(tree, node) do
+    %BinTree{tree | left: add_linear_node(tree.left, node)}
+  end
+
+  @spec add_branch_node(t(), t()) :: t()
+  def add_branch_node(%{left: nil, right: nil} = tree, node) do
+    %BinTree{tree | left: node.left, right: node.right}
+  end
+
+  def add_branch_node(tree, node) do
+    %BinTree{tree | left: add_branch_node(tree.left, node)}
+  end
 end
 
 # defimpl Inspect, for: BinTree do

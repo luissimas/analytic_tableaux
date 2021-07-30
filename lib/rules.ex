@@ -2,35 +2,24 @@ defmodule Rules do
   @moduledoc """
   Tableaux expansion rules
   """
-  @spec apply_linear_rules(list(Expression.t())) :: list(Expression.t())
-  def apply_linear_rules([]), do: []
+  @spec compare_operators(atom(), atom()) :: boolean()
+  def compare_operators(:linear, _), do: true
+  def compare_operators(_, :branch), do: true
+  def compare_operators(_, _), do: false
 
-  def apply_linear_rules(list) do
-    applyed =
-      list
-      |> Enum.filter(&is_linear?/1)
-      |> Enum.map(&apply_rule/1)
-      |> List.flatten()
-
-    applyed ++ apply_linear_rules(applyed)
+  @spec apply_rule(Expression.t()) :: map()
+  def apply_rule(formula) do
+    %{type: get_type(formula), result: rule(formula)}
   end
-
-  @spec apply_branch_rules(list(Expression.t())) :: list(Expression.t())
-  def apply_branch_rules(list) do
-    list
-    |> Enum.filter(&is_branch?/1)
-    |> Enum.map(&apply_rule/1)
-  end
-
-  @spec apply_rule(Expression.t()) ::
-          list(Expression.t()) | %{left: Expression.t(), right: Expression.t()}
-  defp apply_rule(formula), do: rule(formula)
 
   @spec is_linear?(Expression.t()) :: boolean()
-  defp is_linear?(formula), do: type(formula) == :linear
+  def is_linear?(formula), do: type(formula) == :linear
 
   @spec is_branch?(Expression.t()) :: boolean()
-  defp is_branch?(formula), do: type(formula) == :branch
+  def is_branch?(formula), do: type(formula) == :branch
+
+  @spec get_type(Expression.t()) :: :atom | :branch | :linear
+  def get_type(formula), do: type(formula)
 
   defp type(%{sign: :T, formula: {:and, _, _}}), do: :linear
   defp type(%{sign: :F, formula: {:and, _, _}}), do: :branch
@@ -49,12 +38,14 @@ defmodule Rules do
 
   # Fp&q => Fp . Fq
   defp rule(%{sign: :F, formula: {:and, a, b}}) do
-    branch(%{sign: :F, formula: a}, %{sign: :F, formula: b})
+    [%{sign: :F, formula: a}, %{sign: :F, formula: b}]
+    # branch(%{sign: :F, formula: a}, %{sign: :F, formula: b})
   end
 
   # Tp|q => Tp . Fq
   defp rule(%{sign: :T, formula: {:or, a, b}}) do
-    branch(%{sign: :T, formula: a}, %{sign: :T, formula: b})
+    [%{sign: :T, formula: a}, %{sign: :T, formula: b}]
+    # branch(%{sign: :T, formula: a}, %{sign: :T, formula: b})
   end
 
   # Fp|q => Fp . Fq
@@ -64,7 +55,8 @@ defmodule Rules do
 
   # Tp->q => Fp, Tq
   defp rule(%{sign: :T, formula: {:implies, a, b}}) do
-    branch(%{sign: :F, formula: a}, %{sign: :T, formula: b})
+    [%{sign: :F, formula: a}, %{sign: :T, formula: b}]
+    # branch(%{sign: :F, formula: a}, %{sign: :T, formula: b})
   end
 
   # Fp->q => Tp, Fq
@@ -86,7 +78,7 @@ defmodule Rules do
   defp rule(%{formula: atom} = formula) when is_atom(atom), do: formula
 
   # Implement branches
-  defp branch(a, b) do
-    %{left: a, right: b}
-  end
+  # defp branch(a, b) do
+  #   %{left: a, right: b}
+  # end
 end
