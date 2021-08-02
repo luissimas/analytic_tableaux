@@ -21,7 +21,7 @@ defmodule Parser do
   end
 
   @spec create_nodes(list(Expression.t())) :: list(TableauxNode.t()) | TableauxNode.t()
-  defp create_nodes(list, acc \\ 0)
+  defp create_nodes(list, acc \\ 1)
 
   defp create_nodes([formula | []], acc),
     do: [%TableauxNode{formula: formula, sign: :F, nid: acc}]

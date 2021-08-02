@@ -24,7 +24,7 @@ defmodule Tableaux do
         &Rules.compare_operators(&1, &2)
       )
 
-    expansion = Rules.apply_rule(formula)
+    expansion = Rules.apply_rule(formula, Enum.count(to_apply) + Enum.count(applied))
 
     case expansion.type do
       :atom ->

@@ -7,9 +7,9 @@ defmodule Rules do
   def compare_operators(_, :branch), do: true
   def compare_operators(_, _), do: false
 
-  @spec apply_rule(TableauxNode.t()) :: map()
-  def apply_rule(formula) do
-    %{type: get_type(formula), result: rule(formula)}
+  @spec apply_rule(TableauxNode.t(), integer()) :: map()
+  def apply_rule(formula, base_id) do
+    %{type: get_type(formula), result: rule(formula, base_id)}
   end
 
   @spec is_linear?(TableauxNode.t()) :: boolean()
@@ -32,65 +32,65 @@ defmodule Rules do
   defp type(%{formula: atom}) when is_atom(atom), do: :atom
 
   # Tp&q => Tp, Tq
-  defp rule(%{sign: :T, formula: {:and, a, b}, nid: source}) do
+  defp rule(%{sign: :T, formula: {:and, a, b}, nid: source}, base_id) do
     [
-      %TableauxNode{sign: :T, formula: a, source: source, nid: source + 1},
-      %TableauxNode{sign: :T, formula: b, source: source, nid: source + 2}
+      %TableauxNode{sign: :T, formula: a, source: source, nid: base_id + 1},
+      %TableauxNode{sign: :T, formula: b, source: source, nid: base_id + 2}
     ]
   end
 
   # Fp&q => Fp . Fq
-  defp rule(%{sign: :F, formula: {:and, a, b}, nid: source}) do
+  defp rule(%{sign: :F, formula: {:and, a, b}, nid: source}, base_id) do
     [
-      %TableauxNode{sign: :F, formula: a, source: source, nid: source + 1},
-      %TableauxNode{sign: :F, formula: b, source: source, nid: source + 2}
+      %TableauxNode{sign: :F, formula: a, source: source, nid: base_id + 1},
+      %TableauxNode{sign: :F, formula: b, source: source, nid: base_id + 2}
     ]
   end
 
   # Tp|q => Tp . Fq
-  defp rule(%{sign: :T, formula: {:or, a, b}, nid: source}) do
+  defp rule(%{sign: :T, formula: {:or, a, b}, nid: source}, base_id) do
     [
-      %TableauxNode{sign: :T, formula: a, source: source, nid: source + 1},
-      %TableauxNode{sign: :T, formula: b, source: source, nid: source + 2}
+      %TableauxNode{sign: :T, formula: a, source: source, nid: base_id + 1},
+      %TableauxNode{sign: :T, formula: b, source: source, nid: base_id + 2}
     ]
   end
 
   # Fp|q => Fp . Fq
-  defp rule(%{sign: :F, formula: {:or, a, b}, nid: source}) do
+  defp rule(%{sign: :F, formula: {:or, a, b}, nid: source}, base_id) do
     [
-      %TableauxNode{sign: :F, formula: a, source: source, nid: source + 1},
-      %TableauxNode{sign: :F, formula: b, source: source, nid: source + 2}
+      %TableauxNode{sign: :F, formula: a, source: source, nid: base_id + 1},
+      %TableauxNode{sign: :F, formula: b, source: source, nid: base_id + 2}
     ]
   end
 
   # Tp->q => Fp, Tq
-  defp rule(%{sign: :T, formula: {:implies, a, b}, nid: source}) do
+  defp rule(%{sign: :T, formula: {:implies, a, b}, nid: source}, base_id) do
     [
-      %TableauxNode{sign: :F, formula: a, source: source, nid: source + 1},
-      %TableauxNode{sign: :T, formula: b, source: source, nid: source + 2}
+      %TableauxNode{sign: :F, formula: a, source: source, nid: base_id + 1},
+      %TableauxNode{sign: :T, formula: b, source: source, nid: base_id + 2}
     ]
   end
 
   # Fp->q => Tp, Fq
-  defp rule(%{sign: :F, formula: {:implies, a, b}, nid: source}) do
+  defp rule(%{sign: :F, formula: {:implies, a, b}, nid: source}, base_id) do
     [
-      %TableauxNode{sign: :T, formula: a, source: source, nid: source + 1},
-      %TableauxNode{sign: :F, formula: b, source: source, nid: source + 2}
+      %TableauxNode{sign: :T, formula: a, source: source, nid: base_id + 1},
+      %TableauxNode{sign: :F, formula: b, source: source, nid: base_id + 2}
     ]
   end
 
   # T!p => Fp
-  defp rule(%{sign: :T, formula: {:not, a}, nid: source}) do
-    %TableauxNode{sign: :F, formula: a, source: source, nid: source + 1}
+  defp rule(%{sign: :T, formula: {:not, a}, nid: source}, base_id) do
+    %TableauxNode{sign: :F, formula: a, source: source, nid: base_id + 1}
   end
 
   # F!p => Tp
-  defp rule(%{sign: :F, formula: {:not, a}, nid: source}) do
-    %TableauxNode{sign: :T, formula: a, source: source, nid: source + 1}
+  defp rule(%{sign: :F, formula: {:not, a}, nid: source}, base_id) do
+    %TableauxNode{sign: :T, formula: a, source: source, nid: base_id + 1}
   end
 
   # F/T p
-  defp rule(%{formula: atom} = formula) when is_atom(atom), do: formula
+  defp rule(%{formula: atom} = formula, _) when is_atom(atom), do: formula
 
   # Implement branches
   # defp branch(a, b) do
