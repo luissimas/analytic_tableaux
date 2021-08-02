@@ -7,18 +7,18 @@ defmodule Rules do
   def compare_operators(_, :branch), do: true
   def compare_operators(_, _), do: false
 
-  @spec apply_rule(Expression.t()) :: map()
+  @spec apply_rule(TableauxNode.t()) :: map()
   def apply_rule(formula) do
     %{type: get_type(formula), result: rule(formula)}
   end
 
-  @spec is_linear?(Expression.t()) :: boolean()
+  @spec is_linear?(TableauxNode.t()) :: boolean()
   def is_linear?(formula), do: type(formula) == :linear
 
-  @spec is_branch?(Expression.t()) :: boolean()
+  @spec is_branch?(TableauxNode.t()) :: boolean()
   def is_branch?(formula), do: type(formula) == :branch
 
-  @spec get_type(Expression.t()) :: :atom | :branch | :linear
+  @spec get_type(TableauxNode.t()) :: :atom | :branch | :linear
   def get_type(formula), do: type(formula)
 
   defp type(%{sign: :T, formula: {:and, _, _}}), do: :linear
@@ -32,46 +32,61 @@ defmodule Rules do
   defp type(%{formula: atom}) when is_atom(atom), do: :atom
 
   # Tp&q => Tp, Tq
-  defp rule(%{sign: :T, formula: {:and, a, b}}) do
-    [%{sign: :T, formula: a}, %{sign: :T, formula: b}]
+  defp rule(%{sign: :T, formula: {:and, a, b}, nid: source}) do
+    [
+      %TableauxNode{sign: :T, formula: a, source: source, nid: source + 1},
+      %TableauxNode{sign: :T, formula: b, source: source, nid: source + 2}
+    ]
   end
 
   # Fp&q => Fp . Fq
-  defp rule(%{sign: :F, formula: {:and, a, b}}) do
-    [%{sign: :F, formula: a}, %{sign: :F, formula: b}]
-    # branch(%{sign: :F, formula: a}, %{sign: :F, formula: b})
+  defp rule(%{sign: :F, formula: {:and, a, b}, nid: source}) do
+    [
+      %TableauxNode{sign: :F, formula: a, source: source, nid: source + 1},
+      %TableauxNode{sign: :F, formula: b, source: source, nid: source + 2}
+    ]
   end
 
   # Tp|q => Tp . Fq
-  defp rule(%{sign: :T, formula: {:or, a, b}}) do
-    [%{sign: :T, formula: a}, %{sign: :T, formula: b}]
-    # branch(%{sign: :T, formula: a}, %{sign: :T, formula: b})
+  defp rule(%{sign: :T, formula: {:or, a, b}, nid: source}) do
+    [
+      %TableauxNode{sign: :T, formula: a, source: source, nid: source + 1},
+      %TableauxNode{sign: :T, formula: b, source: source, nid: source + 2}
+    ]
   end
 
   # Fp|q => Fp . Fq
-  defp rule(%{sign: :F, formula: {:or, a, b}}) do
-    [%{sign: :F, formula: a}, %{sign: :F, formula: b}]
+  defp rule(%{sign: :F, formula: {:or, a, b}, nid: source}) do
+    [
+      %TableauxNode{sign: :F, formula: a, source: source, nid: source + 1},
+      %TableauxNode{sign: :F, formula: b, source: source, nid: source + 2}
+    ]
   end
 
   # Tp->q => Fp, Tq
-  defp rule(%{sign: :T, formula: {:implies, a, b}}) do
-    [%{sign: :F, formula: a}, %{sign: :T, formula: b}]
-    # branch(%{sign: :F, formula: a}, %{sign: :T, formula: b})
+  defp rule(%{sign: :T, formula: {:implies, a, b}, nid: source}) do
+    [
+      %TableauxNode{sign: :F, formula: a, source: source, nid: source + 1},
+      %TableauxNode{sign: :T, formula: b, source: source, nid: source + 2}
+    ]
   end
 
   # Fp->q => Tp, Fq
-  defp rule(%{sign: :F, formula: {:implies, a, b}}) do
-    [%{sign: :T, formula: a}, %{sign: :F, formula: b}]
+  defp rule(%{sign: :F, formula: {:implies, a, b}, nid: source}) do
+    [
+      %TableauxNode{sign: :T, formula: a, source: source, nid: source + 1},
+      %TableauxNode{sign: :F, formula: b, source: source, nid: source + 2}
+    ]
   end
 
   # T!p => Fp
-  defp rule(%{sign: :T, formula: {:not, a}}) do
-    %{sign: :F, formula: a}
+  defp rule(%{sign: :T, formula: {:not, a}, nid: source}) do
+    %TableauxNode{sign: :F, formula: a, source: source, nid: source + 1}
   end
 
   # F!p => Tp
-  defp rule(%{sign: :F, formula: {:not, a}}) do
-    %{sign: :T, formula: a}
+  defp rule(%{sign: :F, formula: {:not, a}, nid: source}) do
+    %TableauxNode{sign: :T, formula: a, source: source, nid: source + 1}
   end
 
   # F/T p

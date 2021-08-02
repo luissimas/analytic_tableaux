@@ -12,11 +12,11 @@ defmodule Tableaux do
     expand(tree, sequent)
   end
 
-  def expand(tree, to_apply \\ [])
+  def expand(tree, to_apply, applied \\ [])
 
-  def expand(tree, []), do: tree
+  def expand(tree, [], _), do: tree
 
-  def expand(tree, to_apply) do
+  def expand(tree, to_apply, applied) do
     [formula | rest] =
       to_apply
       |> Enum.sort_by(
@@ -29,32 +29,29 @@ defmodule Tableaux do
     case expansion.type do
       :atom ->
         tree
-        |> expand(List.flatten(rest))
+        |> expand(List.flatten(rest), applied ++ [formula])
 
       _ ->
         tree
         |> add_expansion(expansion)
-        |> expand(List.flatten(rest ++ [expansion.result]))
+        |> expand(List.flatten(rest ++ [expansion.result]), applied ++ [formula])
     end
   end
 
-  defp add_expansion(tree, %{type: :branch} = expansion) do
-    [left, right] = expansion.result
-
-    expansion_node = %BinTree{
+  @spec add_expansion(BinTree.t(), map()) :: BinTree.t()
+  def add_expansion(tree, %{type: :branch, result: [left, right]}) do
+    BinTree.add_branch_node(tree, %BinTree{
       value: nil,
-      left: BinTree.create_node(left),
-      right: BinTree.create_node(right)
-    }
-
-    BinTree.add_branch_node(tree, expansion_node)
+      left: %BinTree{value: left},
+      right: %BinTree{value: right}
+    })
   end
 
-  defp add_expansion(tree, %{type: :linear} = expansion) do
-    BinTree.add_linear_node(tree, BinTree.from_list(expansion.result))
+  def add_expansion(tree, %{type: :linear, result: list}) do
+    BinTree.add_linear_node(tree, BinTree.from_list(list))
   end
 
-  defp add_expansion(tree, %{type: :atom} = expansion) do
-    BinTree.add_linear_node(tree, BinTree.create_node(expansion.result))
+  def add_expansion(tree, %{type: :atom, result: atom}) do
+    BinTree.add_linear_node(tree, %BinTree{value: atom})
   end
 end

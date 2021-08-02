@@ -8,14 +8,14 @@ defmodule BinTree do
   """
 
   @type t :: %BinTree{
-          value: Expression.t() | list(Expression.t()),
+          value: TableauxNode.t() | nil,
           left: t() | nil,
           right: t() | nil
         }
 
   defstruct [:value, left: nil, right: nil]
 
-  @spec from_list(list(Expression.t())) :: t() | nil
+  @spec from_list(list(TableauxNode.t())) :: t() | nil
   def from_list([]) do
     nil
   end
@@ -26,10 +26,6 @@ defmodule BinTree do
       left: from_list(tail)
     }
   end
-
-  @spec create_node(Expression.t()) :: t() | nil
-  def create_node(nil), do: nil
-  def create_node(value), do: %BinTree{value: value}
 
   @spec add_linear_node(t(), t()) :: t()
   def add_linear_node(%{left: nil} = tree, node) do
@@ -49,23 +45,3 @@ defmodule BinTree do
     %BinTree{tree | left: add_branch_node(tree.left, node)}
   end
 end
-
-# defimpl Inspect, for: BinTree do
-#   import Inspect.Algebra
-
-#   # A custom inspect instance purely for the tests, this makes error messages
-#   # much more readable.
-#   #
-#   # BinTree[value: 3, left: BinTree[value: 5, right: BinTree[value: 6]]] becomes (3:(5::(6::)):)
-#   def inspect(%BinTree{value: value, left: left, right: right}, opts) do
-#     concat([
-#       "(",
-#       to_doc(value, opts),
-#       ":",
-#       if(left, do: to_doc(left, opts), else: ""),
-#       ":",
-#       if(right, do: to_doc(right, opts), else: ""),
-#       ")"
-#     ])
-#   end
-# end

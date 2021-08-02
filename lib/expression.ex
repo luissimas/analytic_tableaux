@@ -4,16 +4,18 @@ defmodule Expression do
   propositional logic as a (kind of ?) AST
   """
 
+  @type operator :: atom()
+
   @typedoc """
   A unsigned formula in the format {:operator, :operand, :operand}
   """
-  @type formula :: {atom(), atom() | formula(), atom() | formula()}
+  @type t :: {operator(), atom() | t(), atom() | t()} | {operator(), t()}
 
-  @typedoc """
-  A signed formula from classical propositional formula
-  """
-  @type t :: %{
-          sign: :T | :F,
-          formula: formula()
-        }
+  # @typedoc """
+  # A signed formula from classical propositional formula
+  # """
+  # @type t :: %{
+  #         sign: :T | :F,
+  #         formula: formula()
+  #       }
 end
