@@ -48,7 +48,7 @@ defmodule Tableaux do
         %{type: :branch, result: [left, right], source: source_id},
         source_found
       ) do
-    source_found = source_id == tree.value.nid || source_found |> IO.inspect()
+    source_found = source_id == tree.value.nid || source_found
 
     if source_found do
       BinTree.add_branch_node(tree, %BinTree{
@@ -66,7 +66,7 @@ defmodule Tableaux do
         %{type: :branch, source: source_id} = expansion,
         source_found
       ) do
-    source_found = source_id == tree.value.nid || source_found |> IO.inspect()
+    source_found = source_id == tree.value.nid || source_found
 
     %BinTree{
       tree
@@ -80,7 +80,7 @@ defmodule Tableaux do
         %{type: :linear, result: list, source: source_id},
         source_found
       ) do
-    source_found = source_id == tree.value.nid || source_found |> IO.inspect()
+    source_found = source_id == tree.value.nid || source_found
 
     if source_found do
       BinTree.add_linear_node(tree, BinTree.from_list(list))
@@ -94,7 +94,7 @@ defmodule Tableaux do
         %{type: :linear, source: source_id} = expansion,
         source_found
       ) do
-    source_found = source_id == tree.value.nid || source_found |> IO.inspect()
+    source_found = source_id == tree.value.nid || source_found
 
     %BinTree{
       tree
