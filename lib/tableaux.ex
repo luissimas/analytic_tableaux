@@ -38,20 +38,70 @@ defmodule Tableaux do
     end
   end
 
-  @spec add_expansion(BinTree.t(), map()) :: BinTree.t()
-  def add_expansion(tree, %{type: :branch, result: [left, right]}) do
-    BinTree.add_branch_node(tree, %BinTree{
-      value: nil,
-      left: %BinTree{value: left},
-      right: %BinTree{value: right}
-    })
+  @spec add_expansion(BinTree.t(), map(), boolean()) :: BinTree.t()
+  def add_expansion(tree, expansion, source_found \\ false)
+
+  def add_expansion(nil, _, _), do: nil
+
+  def add_expansion(
+        %{left: nil, right: nil} = tree,
+        %{type: :branch, result: [left, right], source: source_id},
+        source_found
+      ) do
+    source_found = source_id == tree.value.nid || source_found |> IO.inspect()
+
+    if source_found do
+      BinTree.add_branch_node(tree, %BinTree{
+        value: nil,
+        left: %BinTree{value: left},
+        right: %BinTree{value: right}
+      })
+    else
+      tree
+    end
   end
 
-  def add_expansion(tree, %{type: :linear, result: list}) do
-    BinTree.add_linear_node(tree, BinTree.from_list(list))
+  def add_expansion(
+        %{left: left, right: right} = tree,
+        %{type: :branch, source: source_id} = expansion,
+        source_found
+      ) do
+    source_found = source_id == tree.value.nid || source_found |> IO.inspect()
+
+    %BinTree{
+      tree
+      | left: add_expansion(left, expansion, source_found),
+        right: add_expansion(right, expansion, source_found)
+    }
   end
 
-  def add_expansion(tree, %{type: :atom, result: atom}) do
-    BinTree.add_linear_node(tree, %BinTree{value: atom})
+  def add_expansion(
+        %{left: nil, right: nil} = tree,
+        %{type: :linear, result: list, source: source_id},
+        source_found
+      ) do
+    source_found = source_id == tree.value.nid || source_found |> IO.inspect()
+
+    if source_found do
+      BinTree.add_linear_node(tree, BinTree.from_list(list))
+    else
+      tree
+    end
   end
+
+  def add_expansion(
+        %{left: left, right: right} = tree,
+        %{type: :linear, source: source_id} = expansion,
+        source_found
+      ) do
+    source_found = source_id == tree.value.nid || source_found |> IO.inspect()
+
+    %BinTree{
+      tree
+      | left: add_expansion(left, expansion, source_found),
+        right: add_expansion(right, expansion, source_found)
+    }
+  end
+
+  def add_expansion(tree, %{type: :atom}, _), do: tree
 end

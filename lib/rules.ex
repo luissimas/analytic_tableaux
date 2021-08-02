@@ -9,7 +9,7 @@ defmodule Rules do
 
   @spec apply_rule(TableauxNode.t(), integer()) :: map()
   def apply_rule(formula, base_id) do
-    %{type: get_type(formula), result: rule(formula, base_id)}
+    %{type: get_type(formula), result: rule(formula, base_id), source: base_id}
   end
 
   @spec is_linear?(TableauxNode.t()) :: boolean()
