@@ -17,12 +17,7 @@ defmodule Tableaux do
   defp expand(tree, [], _), do: tree
 
   defp expand(tree, to_apply, applied) do
-    [formula | rest] =
-      to_apply
-      |> Enum.sort_by(
-        &Rules.get_type/1,
-        &Rules.compare_operators(&1, &2)
-      )
+    [formula | rest] = sort_formulas(to_apply)
 
     expansion = Rules.apply_rule(formula, Enum.count(to_apply) + Enum.count(applied))
 
@@ -36,6 +31,15 @@ defmodule Tableaux do
         |> add_expansion(expansion)
         |> expand(List.flatten(rest ++ [expansion.result]), applied ++ [formula])
     end
+  end
+
+  @spec sort_formulas([TableauxNode.t()]) :: [TableauxNode.t()]
+  defp sort_formulas(list) do
+    Enum.sort_by(
+      list,
+      &Rules.get_type/1,
+      &Rules.compare_operators(&1, &2)
+    )
   end
 
   @spec add_expansion(BinTree.t(), map(), boolean()) :: BinTree.t()
