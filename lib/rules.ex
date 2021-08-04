@@ -81,12 +81,12 @@ defmodule Rules do
 
   # T!p => Fp
   defp rule(%{sign: :T, formula: {:not, a}, nid: source}, base_id) do
-    %TableauxNode{sign: :F, formula: a, source: source, nid: base_id + 1}
+    [%TableauxNode{sign: :F, formula: a, source: source, nid: base_id + 1}]
   end
 
   # F!p => Tp
   defp rule(%{sign: :F, formula: {:not, a}, nid: source}, base_id) do
-    %TableauxNode{sign: :T, formula: a, source: source, nid: base_id + 1}
+    [%TableauxNode{sign: :T, formula: a, source: source, nid: base_id + 1}]
   end
 
   # F/T p
