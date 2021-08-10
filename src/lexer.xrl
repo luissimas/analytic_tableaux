@@ -1,6 +1,6 @@
 Definitions.
 
-ATOM          = [a-z]
+ATOM          = [a-z1-9\_]*
 WHITESPACE    = [\s\t\n\r]
 AND           = \&
 OR            = \|

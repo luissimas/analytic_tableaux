@@ -124,6 +124,8 @@ defmodule Tableaux do
   defp add_expansion(tree, %{type: :atom}, _, _), do: tree
 
   @spec close_branch(BinTree.t(), [TableauxNode.t()]) :: BinTree.t()
+  defp close_branch(nil, _), do: nil
+
   defp close_branch(%{value: value, left: nil, right: nil} = tree, path) do
     inverted_formula = invert_sign(value)
 
@@ -143,7 +145,7 @@ defmodule Tableaux do
         right: close_branch(right, [value | path])
     }
 
-    %BinTree{new_tree | value: %{closed: branch_closed?(new_tree)}}
+    %BinTree{new_tree | value: %TableauxNode{value | closed: branch_closed?(new_tree)}}
   end
 
   @spec branch_closed?(BinTree.t()) :: boolean()
