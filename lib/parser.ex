@@ -3,15 +3,16 @@ defmodule Parser do
     Parser for propositional logic formulas
   """
 
-  @spec parse(binary()) :: list(TableauxNode.t())
+  @spec parse(String.t()) :: list()
   def parse(input) do
     input
     |> String.split([",", "|-"])
+    |> Enum.filter(fn x -> x != "" end)
     |> Enum.map(&parse_formula/1)
     |> create_nodes
   end
 
-  @spec parse_formula(bitstring()) :: Expression.t()
+  @spec parse_formula(String.t()) :: tuple()
   defp parse_formula(input) do
     {:ok, tokens, _} = input |> String.to_charlist() |> :lexer.string()
 
@@ -20,12 +21,9 @@ defmodule Parser do
     result
   end
 
-  @spec create_nodes(list(Expression.t())) :: list(TableauxNode.t()) | TableauxNode.t()
-  defp create_nodes(list, acc \\ 1)
+  @spec create_nodes([TreeNode.formula()]) :: [TreeNode.t()]
+  defp create_nodes([formula | []]), do: [%TreeNode{formula: formula, sign: :F}]
 
-  defp create_nodes([formula | []], acc),
-    do: [%TableauxNode{formula: formula, sign: :F, nid: acc}]
-
-  defp create_nodes([formula | tail], acc),
-    do: [%TableauxNode{formula: formula, sign: :T, nid: acc} | create_nodes(tail, acc + 1)]
+  defp create_nodes([formula | tail]),
+    do: [%TreeNode{formula: formula, sign: :T} | create_nodes(tail)]
 end

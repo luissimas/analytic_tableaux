@@ -10,38 +10,44 @@ defmodule RulesTest do
   defp f7(), do: %{sign: :T, formula: {:not, :p}}
   defp f8(), do: %{sign: :F, formula: {:not, :p}}
 
-  @tag :pending
   test "and rules" do
-    assert Rules.apply_rule(f1()) == [%{sign: :T, formula: :p}, %{sign: :T, formula: :q}]
-    assert Rules.apply_rule(f2()) == [%{sign: :F, formula: :p}, %{sign: :F, formula: :q}]
+    assert Rules.apply_rule(f1()).expansion == [
+             %TreeNode{sign: :T, formula: :p},
+             %TreeNode{sign: :T, formula: :q}
+           ]
+
+    assert Rules.apply_rule(f2()).expansion == [
+             %TreeNode{sign: :F, formula: :p},
+             %TreeNode{sign: :F, formula: :q}
+           ]
   end
 
-  @tag :pending
   test "or rules" do
-    assert Rules.apply_rule(f3()) == [%{sign: :T, formula: :p}, %{sign: :T, formula: :q}]
-    assert Rules.apply_rule(f4()) == [%{sign: :F, formula: :p}, %{sign: :F, formula: :q}]
+    assert Rules.apply_rule(f3()).expansion == [
+             %TreeNode{sign: :T, formula: :p},
+             %TreeNode{sign: :T, formula: :q}
+           ]
+
+    assert Rules.apply_rule(f4()).expansion == [
+             %TreeNode{sign: :F, formula: :p},
+             %TreeNode{sign: :F, formula: :q}
+           ]
   end
 
-  @tag :pending
   test "implies rules" do
-    assert Rules.apply_rule(f5()) == [%{sign: :F, formula: :p}, %{sign: :T, formula: :q}]
-    assert Rules.apply_rule(f6()) == [%{sign: :T, formula: :p}, %{sign: :F, formula: :q}]
+    assert Rules.apply_rule(f5()).expansion == [
+             %TreeNode{sign: :F, formula: :p},
+             %TreeNode{sign: :T, formula: :q}
+           ]
+
+    assert Rules.apply_rule(f6()).expansion == [
+             %TreeNode{sign: :T, formula: :p},
+             %TreeNode{sign: :F, formula: :q}
+           ]
   end
 
-  @tag :pending
   test "not rules" do
-    assert Rules.apply_rule(f7()) == %{sign: :F, formula: :p}
-    assert Rules.apply_rule(f8()) == %{sign: :T, formula: :p}
-  end
-
-  test "rule types" do
-    assert Rules.get_type(f1()) == :linear
-    assert Rules.get_type(f2()) == :branch
-    assert Rules.get_type(f3()) == :branch
-    assert Rules.get_type(f4()) == :linear
-    assert Rules.get_type(f5()) == :branch
-    assert Rules.get_type(f6()) == :linear
-    assert Rules.get_type(f7()) == :linear
-    assert Rules.get_type(f8()) == :linear
+    assert Rules.apply_rule(f7()).expansion == [%TreeNode{sign: :F, formula: :p}]
+    assert Rules.apply_rule(f8()).expansion == [%TreeNode{sign: :T, formula: :p}]
   end
 end

@@ -1,47 +1,37 @@
 defmodule BinTree do
-  @moduledoc """
-  A node in a binary tree.
-
-  `value` is the value of a node, it can be either a formula or a list of formulas.
-  `left` is the left subtree (nil if no subtree).
-  `right` is the right subtree (nil if no subtree).
-  """
-
   @type t :: %BinTree{
-          value: TableauxNode.t() | nil,
-          left: t() | nil,
-          right: t() | nil
+          value: TreeNode.t(),
+          left: BinTree.t() | nil,
+          right: BinTree.t() | nil
         }
 
   defstruct [:value, left: nil, right: nil]
 
-  @spec from_list(list(TableauxNode.t())) :: t() | nil
-  def from_list([]) do
-    nil
+  @spec linear_from_list([TreeNode.t()]) :: BinTree.t()
+  def linear_from_list([]), do: nil
+
+  def linear_from_list([head | tail]) do
+    %BinTree{value: head, left: linear_from_list(tail)}
   end
 
-  def from_list([head | tail]) do
-    %BinTree{
-      value: head,
-      left: from_list(tail)
-    }
+  @spec branch_from_list([TreeNode.t()]) :: BinTree.t()
+  def branch_from_list([]), do: nil
+
+  def branch_from_list([left, right]) do
+    %BinTree{value: nil, left: from_node(left), right: from_node(right)}
   end
 
-  @spec add_linear_node(t(), t()) :: t()
-  def add_linear_node(%{left: nil} = tree, node) do
-    %BinTree{tree | left: node}
+  @spec from_node(TreeNode.t()) :: BinTree.t()
+  def from_node(node) do
+    %BinTree{value: node}
   end
 
-  def add_linear_node(tree, node) do
-    %BinTree{tree | left: add_linear_node(tree.left, node)}
+  @spec add(BinTree.t(), BinTree.t()) :: BinTree.t()
+  def add(%{left: nil, right: nil} = tree, %{value: nil, left: left, right: right}) do
+    %BinTree{tree | left: left, right: right}
   end
 
-  @spec add_branch_node(t(), t()) :: t()
-  def add_branch_node(%{left: nil, right: nil} = tree, node) do
-    %BinTree{tree | left: node.left, right: node.right}
-  end
-
-  def add_branch_node(tree, node) do
-    %BinTree{tree | left: add_branch_node(tree.left, node)}
+  def add(%{left: nil, right: nil} = tree, branch) do
+    %BinTree{tree | left: branch}
   end
 end

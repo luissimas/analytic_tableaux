@@ -3,26 +3,17 @@ defmodule ParserTest do
 
   test "parses a simple sequent" do
     assert Parser.parse("p->q,p|-q") == [
-             %TableauxNode{
+             %TreeNode{
                formula: {:implies, :p, :q},
-               closed: false,
-               source: nil,
-               sign: :T,
-               nid: 1
+               sign: :T
              },
-             %TableauxNode{
+             %TreeNode{
                formula: :p,
-               closed: false,
-               source: nil,
-               sign: :T,
-               nid: 2
+               sign: :T
              },
-             %TableauxNode{
+             %TreeNode{
                formula: :q,
-               closed: false,
-               source: nil,
-               sign: :F,
-               nid: 3
+               sign: :F
              }
            ]
   end
@@ -37,40 +28,25 @@ defmodule ParserTest do
 
   test "parses complex sequents" do
     assert Parser.parse("p&!q->r|t, t->q|!r, r&!q, p|t |- p->!r") == [
-             %TableauxNode{
+             %TreeNode{
                formula: {:implies, {:and, :p, {:not, :q}}, {:or, :r, :t}},
-               closed: false,
-               source: nil,
-               sign: :T,
-               nid: 1
+               sign: :T
              },
-             %TableauxNode{
+             %TreeNode{
                formula: {:implies, :t, {:or, :q, {:not, :r}}},
-               closed: false,
-               source: nil,
-               sign: :T,
-               nid: 2
+               sign: :T
              },
-             %TableauxNode{
+             %TreeNode{
                formula: {:and, :r, {:not, :q}},
-               closed: false,
-               source: nil,
-               sign: :T,
-               nid: 3
+               sign: :T
              },
-             %TableauxNode{
+             %TreeNode{
                formula: {:or, :p, :t},
-               closed: false,
-               source: nil,
-               sign: :T,
-               nid: 4
+               sign: :T
              },
-             %TableauxNode{
+             %TreeNode{
                formula: {:implies, :p, {:not, :r}},
-               closed: false,
-               source: nil,
-               sign: :F,
-               nid: 5
+               sign: :F
              }
            ]
   end
