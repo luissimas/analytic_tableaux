@@ -3,15 +3,15 @@ defmodule ParserTest do
 
   test "parses a simple sequent" do
     assert Parser.parse("p->q,p|-q") == [
-             %TreeNode{
+             %Formula{
                formula: {:implies, :p, :q},
                sign: :T
              },
-             %TreeNode{
+             %Formula{
                formula: :p,
                sign: :T
              },
-             %TreeNode{
+             %Formula{
                formula: :q,
                sign: :F
              }
@@ -28,23 +28,23 @@ defmodule ParserTest do
 
   test "parses complex sequents" do
     assert Parser.parse("p&!q->r|t, t->q|!r, r&!q, p|t |- p->!r") == [
-             %TreeNode{
+             %Formula{
                formula: {:implies, {:and, :p, {:not, :q}}, {:or, :r, :t}},
                sign: :T
              },
-             %TreeNode{
+             %Formula{
                formula: {:implies, :t, {:or, :q, {:not, :r}}},
                sign: :T
              },
-             %TreeNode{
+             %Formula{
                formula: {:and, :r, {:not, :q}},
                sign: :T
              },
-             %TreeNode{
+             %Formula{
                formula: {:or, :p, :t},
                sign: :T
              },
-             %TreeNode{
+             %Formula{
                formula: {:implies, :p, {:not, :r}},
                sign: :F
              }

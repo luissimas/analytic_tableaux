@@ -3,16 +3,16 @@ defmodule Parser do
     Parser for propositional logic formulas
   """
 
-  @spec parse(String.t()) :: list()
+  @spec parse(String.t()) :: [Formula.t()]
   def parse(input) do
     input
     |> String.split([",", "|-"])
-    |> Enum.filter(fn x -> x != "" end)
+    |> Enum.reject(fn x -> x == "" end)
     |> Enum.map(&parse_formula/1)
-    |> create_nodes
+    |> sign_formulas
   end
 
-  @spec parse_formula(String.t()) :: tuple()
+  @spec parse_formula(String.t()) :: Formula.formula()
   defp parse_formula(input) do
     {:ok, tokens, _} = input |> String.to_charlist() |> :lexer.string()
 
@@ -21,9 +21,9 @@ defmodule Parser do
     result
   end
 
-  @spec create_nodes([TreeNode.formula()]) :: [TreeNode.t()]
-  defp create_nodes([formula | []]), do: [%TreeNode{formula: formula, sign: :F}]
+  @spec sign_formulas([Formula.formula()]) :: [Formula.t()]
+  defp sign_formulas([formula | []]), do: [%Formula{formula: formula, sign: :F}]
 
-  defp create_nodes([formula | tail]),
-    do: [%TreeNode{formula: formula, sign: :T} | create_nodes(tail)]
+  defp sign_formulas([formula | tail]),
+    do: [%Formula{formula: formula, sign: :T} | sign_formulas(tail)]
 end

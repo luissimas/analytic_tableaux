@@ -3,33 +3,14 @@ defmodule Rules do
   Tableaux expansion rules
   """
 
-  @spec apply_rule(TreeNode.t()) :: %{tree: BinTree.t(), expansion: [TreeNode.t()]}
+  @spec apply_rule(Formula.t()) :: {:atom | :branch | :linear, [Formula.t()]}
   def apply_rule(formula) do
-    type = get_type(formula)
-    expansion = get_expansion(formula)
-
-    case type do
-      :linear ->
-        %{
-          tree: BinTree.linear_from_list(expansion),
-          expansion: expansion
-        }
-
-      :branch ->
-        %{
-          tree: BinTree.branch_from_list(expansion),
-          expansion: expansion
-        }
-
-      :atom ->
-        %{
-          tree: BinTree.from_node(expansion),
-          expansion: []
-        }
-    end
+    {get_type(formula), get_expansion(formula)}
   end
 
-  @spec can_expand?(TreeNode.t()) :: boolean()
+  @spec can_expand?(Formula.t()) :: boolean()
+  def can_expand?(nil), do: false
+
   def can_expand?(formula) do
     case get_type(formula) do
       :atom -> false
@@ -37,12 +18,7 @@ defmodule Rules do
     end
   end
 
-  @spec compare_operators(atom(), atom()) :: boolean()
-  def compare_operators(:linear, _), do: true
-  def compare_operators(_, :branch), do: true
-  def compare_operators(_, _), do: false
-
-  @spec get_type(TreeNode.t()) :: :linear | :branch | :atom
+  @spec get_type(Formula.t()) :: :linear | :branch | :atom
   def get_type(%{sign: :T, formula: {:and, _, _}}), do: :linear
   def get_type(%{sign: :F, formula: {:and, _, _}}), do: :branch
   def get_type(%{sign: :T, formula: {:or, _, _}}), do: :branch
@@ -53,61 +29,28 @@ defmodule Rules do
   def get_type(%{sign: :F, formula: {:not, _}}), do: :linear
   def get_type(%{formula: _}), do: :atom
 
-  # Tp&q => Tp, Tq
-  defp get_expansion(%{sign: :T, formula: {:and, a, b}}) do
-    [
-      %TreeNode{sign: :T, formula: a},
-      %TreeNode{sign: :T, formula: b}
-    ]
-  end
+  @spec get_expansion(Formula.t()) :: [Formula.t()]
+  defp get_expansion(%{sign: :T, formula: {:and, a, b}}),
+    do: [%Formula{sign: :T, formula: a}, %Formula{sign: :T, formula: b}]
 
-  # Fp&q => Fp . Fq
-  defp get_expansion(%{sign: :F, formula: {:and, a, b}}) do
-    [
-      %TreeNode{sign: :F, formula: a},
-      %TreeNode{sign: :F, formula: b}
-    ]
-  end
+  defp get_expansion(%{sign: :F, formula: {:and, a, b}}),
+    do: [%Formula{sign: :F, formula: a}, %Formula{sign: :F, formula: b}]
 
-  # Tp|q => Tp . Fq
-  defp get_expansion(%{sign: :T, formula: {:or, a, b}}) do
-    [
-      %TreeNode{sign: :T, formula: a},
-      %TreeNode{sign: :T, formula: b}
-    ]
-  end
+  defp get_expansion(%{sign: :T, formula: {:or, a, b}}),
+    do: [%Formula{sign: :T, formula: a}, %Formula{sign: :T, formula: b}]
 
-  # Fp|q => Fp,  Fq
-  defp get_expansion(%{sign: :F, formula: {:or, a, b}}) do
-    [
-      %TreeNode{sign: :F, formula: a},
-      %TreeNode{sign: :F, formula: b}
-    ]
-  end
+  defp get_expansion(%{sign: :F, formula: {:or, a, b}}),
+    do: [%Formula{sign: :F, formula: a}, %Formula{sign: :F, formula: b}]
 
-  # Tp->q => Fp . Tq
-  defp get_expansion(%{sign: :T, formula: {:implies, a, b}}) do
-    [
-      %TreeNode{sign: :F, formula: a},
-      %TreeNode{sign: :T, formula: b}
-    ]
-  end
+  defp get_expansion(%{sign: :T, formula: {:implies, a, b}}),
+    do: [%Formula{sign: :F, formula: a}, %Formula{sign: :T, formula: b}]
 
-  # Fp->q => Tp, Fq
-  defp get_expansion(%{sign: :F, formula: {:implies, a, b}}) do
-    [%TreeNode{sign: :T, formula: a}, %TreeNode{sign: :F, formula: b}]
-  end
+  defp get_expansion(%{sign: :F, formula: {:implies, a, b}}),
+    do: [%Formula{sign: :T, formula: a}, %Formula{sign: :F, formula: b}]
 
-  # T!p => Fp
-  defp get_expansion(%{sign: :T, formula: {:not, a}}) do
-    [%TreeNode{sign: :F, formula: a}]
-  end
+  defp get_expansion(%{sign: :T, formula: {:not, a}}), do: [%Formula{sign: :F, formula: a}, nil]
 
-  # F!p => Tp
-  defp get_expansion(%{sign: :F, formula: {:not, a}}) do
-    [%TreeNode{sign: :T, formula: a}]
-  end
+  defp get_expansion(%{sign: :F, formula: {:not, a}}), do: [%Formula{sign: :T, formula: a}, nil]
 
-  # F/T p => F/T p
-  defp get_expansion(%{formula: _} = formula), do: formula
+  defp get_expansion(_), do: []
 end
