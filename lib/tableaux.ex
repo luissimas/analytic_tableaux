@@ -21,8 +21,6 @@ defmodule Tableaux do
   end
 
   @spec is_valid?(Formula.t(), [Formula.t()], [Formula.t()]) :: boolean()
-  defp is_valid?(nil, _, _), do: false
-
   defp is_valid?(formula, path, to_expand) do
     cond do
       closed?(formula, path) ->
@@ -33,19 +31,18 @@ defmodule Tableaux do
         # then call is_valid? on the new expanded formulas
         {type, expanded} = Rules.apply_rule(formula)
 
-        new_to_expand = Enum.filter(expanded, &Rules.can_expand?/1) ++ to_expand
-        new_path = [formula] ++ path
+        new_path = [formula | path]
 
         case type do
           :linear ->
-            [first, _] = expanded
+            [first, second] = expanded
 
-            is_valid?(first, new_path, new_to_expand)
+            is_valid?(first, new_path, [second | to_expand])
 
           :branch ->
             [left, right] = expanded
 
-            is_valid?(left, new_path, new_to_expand) and is_valid?(right, new_path, new_to_expand)
+            is_valid?(left, new_path, to_expand) and is_valid?(right, new_path, to_expand)
         end
 
       Enum.empty?(to_expand) ->
@@ -54,7 +51,7 @@ defmodule Tableaux do
       true ->
         # Get the first formula from the stack, and call is_valid? on it
         [head | tail] = to_expand
-        new_path = [formula] ++ path
+        new_path = [formula | path]
 
         is_valid?(head, new_path, tail)
     end

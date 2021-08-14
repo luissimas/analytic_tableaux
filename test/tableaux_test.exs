@@ -17,4 +17,8 @@ defmodule TableauxTest do
   test "prove PHP2" do
     assert ProblemGenerator.generate(2) |> Tableaux.prove() == true
   end
+
+  test "prove PHP3" do
+    assert ProblemGenerator.generate(3) |> Tableaux.prove() == true
+  end
 end
