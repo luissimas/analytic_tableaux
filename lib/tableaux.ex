@@ -38,10 +38,9 @@ defmodule Tableaux do
 
         case type do
           :linear ->
-            [first, second] = expanded
+            [first, _] = expanded
 
-            is_valid?(first, new_path, new_to_expand) or
-              is_valid?(second, new_path, new_to_expand)
+            is_valid?(first, new_path, new_to_expand)
 
           :branch ->
             [left, right] = expanded
@@ -53,8 +52,7 @@ defmodule Tableaux do
         false
 
       true ->
-        # Expand the first formula from the stack, add the expansions to the stack,
-        # then call is_valid? on the new expanded formulas
+        # Get the first formula from the stack, and call is_valid? on it
         [head | tail] = to_expand
         new_path = [formula] ++ path
 
