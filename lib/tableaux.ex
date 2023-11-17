@@ -18,9 +18,10 @@ defmodule Tableaux do
   """
   @spec prove(String.t()) :: boolean()
   def prove(argument) do
-    [head | tail] = Parser.parse(argument)
-
-    is_valid?(head, [], tail)
+    case Parser.parse(argument) do
+      {:ok, [head | tail]} -> is_valid?(head, [], tail)
+      error -> error
+    end
   end
 
   @spec is_valid?(Formula.t(), [Formula.t()], [Formula.t()]) :: t()
